@@ -12,6 +12,9 @@ export class FeaturesRouter extends PromiseRouter {
           update: true,
           delete: true,
         },
+        cloudCode: {
+          viewCode: true,
+        }, 
         hooks: {
           create: false,
           read: false,
