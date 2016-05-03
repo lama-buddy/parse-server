@@ -24,6 +24,7 @@ import requiredParameter        from './requiredParameter';
 import { AnalyticsRouter }      from './Routers/AnalyticsRouter';
 import { ClassesRouter }        from './Routers/ClassesRouter';
 import { FeaturesRouter }       from './Routers/FeaturesRouter';
+import { CloudCodeRouter }       from './Routers/CloudCodeRouter';
 import { FileLoggerAdapter }    from './Adapters/Logger/FileLoggerAdapter';
 import { FilesController }      from './Controllers/FilesController';
 import { FilesRouter }          from './Routers/FilesRouter';
@@ -240,6 +241,7 @@ class ParseServer {
       new LogsRouter(),
       new IAPValidationRouter(),
       new FeaturesRouter(),
+      new CloudCodeRouter(),
       new GlobalConfigRouter(),
     ];
 
