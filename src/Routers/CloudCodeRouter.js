@@ -2,12 +2,17 @@ import { version }     from '../../package.json';
 import PromiseRouter   from '../PromiseRouter';
 import * as middleware from "../middlewares";
 import Config from '../Config';
+import path from 'path';
+import fs from 'fs';
+import crypto from 'crypto';
+
 //import mime from 'mime';
 
 export class CloudCodeRouter extends PromiseRouter {
   mountRoutes() {
     this.route('GET','/releases/latest', middleware.promiseEnforceMasterKeyAccess, req => {
       const parseURL = "https://aux.parse.buddy.com/";
+      let cloudCodeFolderPath = path.resolve(__dirname, "../../cloud");
 
       // get the latest version from parseURL+"app/current"
       const cloudCodeVersion = "v6";
@@ -17,7 +22,8 @@ export class CloudCodeRouter extends PromiseRouter {
       var masterKey = req.config.masterKey;
       var restAPIKey = req.config.restAPIKey;
       var fileKey = req.config.fileKey;
-
+      const config = new Config(applicationId);
+      const filesController = config.filesController;
       // _id is not unused
       const id = "sQcFtb9guw"; // can be a random Number
 
@@ -27,6 +33,28 @@ export class CloudCodeRouter extends PromiseRouter {
       //var timeStamp = Date.now().toISOString();
       var date = new Date();
       var timestamp = date.toISOString();
+
+      var files = fs.readdirSync(cloudCodeFolderPath);
+
+      for(var i = 0; i < files.length; i++) {
+          var filePath = path.join(cloudCodeFolderPath, files[i]);
+
+          var fileContent = fs.readFileSync(filePath, 'utf8');
+          var hash = crypto.createHash('md5').update(fileContent).digest('hex');
+          // const hash = crypto.createHash("sha256");
+          // hash.update(fileContent);
+          // const hashResult = hash.digest("hex");
+
+          console.log(hash);
+          //var file = fs.statSync(filePath);
+
+          // if (file.isDirectory()) {
+          //     rmdirRecursiveSync(filePath);
+          // }
+          // else {
+          //     fs.unlinkSync(filePath);
+          // }
+      }
       //console.log(timestamp);
 // ```    GET     /app/cloudcode/{version}.zip (com.buddy.parse.aux.resource.AppResource)
 //     POST    /app/cloudcode/{version}.zip (com.buddy.parse.aux.resource.AppResource)
