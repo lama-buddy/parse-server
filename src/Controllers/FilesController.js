@@ -26,7 +26,10 @@ export class FilesController extends AdaptableController {
       contentType = mime.lookup(filename);
     }
 
-    filename = randomHexString(32) + '_' + filename;
+    var hexstring = randomHexString(32);
+
+    var guidstring = hexstring.substring(0,8) + "-" + hexstring.substring(8,12) + "-" + hexstring.substring(12,16) + "-" + hexstring.substring(16,20) + "-" + hexstring.substring(20);
+    filename = guidstring + '-' + filename;
 
     var location = this.adapter.getFileLocation(config, filename);
     return this.adapter.createFile(filename, data, contentType).then(() => {
