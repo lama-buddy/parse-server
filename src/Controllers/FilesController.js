@@ -60,18 +60,24 @@ export class FilesController extends AdaptableController {
         if (fileObject['url']) {
           continue;
         }
+
         let filename = fileObject['name'];
         // all filenames starting with "tfss-" should be from files.parsetfss.com
         // all filenames starting with a "-" seperated UUID should be from files.parse.com
         // all other filenames have been migrated or created from Parse Server
-        if (config.fileKey === undefined) {
+        if (config.fileKey === undefined || config.fileKey === '') {
+          // no legacy files, so all new files have no dashes in UUID. fix up fileObject['name'] to have dashes so filename is displayed correctly in the client apps
+          fileObject['name'] =  this.getExpandedFileName(filename);
           fileObject['url'] = this.adapter.getFileLocation(config, filename);
         } else {
+          // mix of some legacy files and local files
           if (filename.indexOf('tfss-') === 0) {
             fileObject['url'] = 'http://files.parsetfss.com/' + config.fileKey + '/' + encodeURIComponent(filename);
           } else if (legacyFilesRegex.test(filename)) {
             fileObject['url'] = 'http://files.parse.com/' + config.fileKey + '/' + encodeURIComponent(filename);
           } else {
+            // local files without dashes in UUID. fix up fileObject['name'] to have dashes so filename is displayed correctly in the client apps
+            fileObject['name'] =  this.getExpandedFileName(filename);
             fileObject['url'] = this.adapter.getFileLocation(config, filename);
           }
         }
@@ -85,6 +91,14 @@ export class FilesController extends AdaptableController {
 
   getFileStream(config, filename) {
     return this.adapter.getFileStream(filename);
+   }
+
+   getExpandedFileName(filename) {
+     // add the dashes into the UUID and put a - instead of _ before filename
+     var updatedFileName = filename.substring(0,8) + "-" + filename.substring(8,12) + "-" + filename.substring(12,16) +
+      "-" + filename.substring(16,20) + "-" + filename.substring(20,32) + '-' + filename.substring(33);
+
+      return updatedFileName;
    }
 }
 
